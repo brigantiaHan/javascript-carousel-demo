@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Carousel Demo</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<style type="text/css">
+
+
+		.infiniteCarousel
+		{
+
+			width: 395px;
+
+		}
+
+		.infiniteCarousel .wrapper {
+		  width: 315px; 
+		 
+		  height: 105px;
+		  margin: 0 40px;
+		  
+		
+		  top: 0;
+
+		}
+
+		.infiniteCarousel .wrapper ul {
+			width: 9999px;
+		  list-style-type:none;
+		  margin:0;
+		  padding:0;
+		    position: relative;
+		  top: 0;
+		}
+		.infiniteCarousel ul li {
+		  display:block;
+		  float:left;
+		  padding: 10px;
+		  height: 85px;
+		  width: 85px;
+
+		}
+
+		.infiniteCarousel .arrow 
+		{
+		/*  display: block;*/
+		 
+		  
+		  
+		  position: absolute;
+		  top: 95px;
+		  cursor: pointer;
+		 
+		}
+
+		.infiniteCarousel .forward
+		{
+			
+			left:374px;
+		}
+
+		.infiniteCarousel .back
+		{
+			transform: scale(-1);
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<h3>View our birds</h3>
+</div>
+<div class="infiniteCarousel">
+
+	<div class="wrapper">
+
+		<ul>
+
+          <li><a href="#"><img src="./bird/bird_2.jpg" height="75" width="75"></a></li>
+          <li><a href="#"><img src="./bird/bird_3.jpg" height="75" width="75"></a></li>
+          <li><a href="#"><img src="./bird/bird_4.jpg" height="75" width="75" ></a></li>
+          <li><a href="#"><img src="./bird/bird_5.jpg" height="75" width="75"></a></li>
+          <li><a href="#"><img src="./bird/bird_6.jpg" height="75" width="75"></a></li>
+          <li><a href="#"><img src="./bird/bird_7.jpg" height="75" width="75"></a></li>
+          <li><a href="#"><img src="./bird/bird_8.jpg" height="75" width="75"></a></li>
+ 		  <li><a href="#"><img src="./bird/bird_9.jpg" height="75" width="75"></a></li>
+ 		  <li><a href="#"><img src="./bird/bird_10.jpg" height="75" width="75"></a></li>
+ 		  <li><a href="#"><img src="./bird/bird_11.jpg" height="75" width="75"></a></li>
+
+		</ul>
+	</div>
+	<a class="arrow back"><img src="bird/arrow.png" style="width: 30px;height: 30px;" /></a>
+    <a class="arrow forward"><img src="bird/arrow.png" style="width: 30px;height: 30px;" /></a>
+</div>
+<script type="text/javascript">
+
+	(function()
+		{
+			$.fn.infiniteCarousel=function()
+							{
+
+					function repeat(str,n)
+					{
+						return new Array(n+1).join(str);
+					}
+									return this.each(function()
+										{
+										var $wrapper=$('> div',this).css('overflow','hidden'),
+											$slider=$wrapper.find('>ul'),
+											$items=$slider.find('>li'),
+											$single=$items.filter(':first');
+
+											singleWidth=$single.outerWidth(),
+											visible=Math.ceil($wrapper.innerWidth()/singleWidth),
+											currentPage=1,
+											pages=Math.ceil($items.length/visible);
+
+
+											if($items.length%visible!=0)
+											{
+												$slider.append(repeat('<li class="empty"></li>',visible-$items.length%visible));
+											}
+											
+											$items=$slider.find('>li');
+											
+										//create the carousel padding on left and right(cloned)
+										$items.filter(':first').before(
+										$items.slice(-visible).clone().addClass('cloned')
+										);
+
+										$items.filter(':last').after($items.slice(0,visible).clone().addClass('cloned'));
+
+										//reset scroll
+							 			$wrapper.scrollLeft(singleWidth*visible);
+
+									function gotoPage(page)
+									{
+										var dir=page>currentPage?1:-1,
+										n=Math.abs(currentPage-page),
+										left=dir*n*singleWidth*visible;
+										
+
+										if(page>0&&page<=pages)
+										{
+
+							 				$wrapper.filter(':not(:animated)').animate({
+							 				
+							 				scrollLeft :'+='+left
+
+							 				
+
+							 			},500,function()
+							 			{
+							 				
+							 					currentPage=page;
+							 			}
+							 				);//animate
+
+							 			}//if
+
+							 			
+
+							 		}//gotoPage
+
+							 		function rollBack()
+							 		{
+							 			dir=-1;
+							 				n=pages-1;
+							 				left=dir*n*singleWidth*visible;
+							 				$wrapper.filter(':not(:animated)').animate({
+							 				
+							 					scrollLeft :'+='+left
+
+							 				
+
+							 			},600,function()
+							 			{
+							 				
+							 					currentPage=1;
+							 			}
+							 				);//animate
+							 		}//rollBack
+							 		window.gotoPage=gotoPage;
+							 		window.rollBack=rollBack;
+								$('a.back',this).click(
+
+								function()
+								{
+									gotoPage(currentPage-1);
+									return false;
+								});
+							$('a.forward',this).click(
+
+							function()
+							{
+								if(currentPage<pages)
+								gotoPage(currentPage+1);
+								return false;
+							});
+
+							setInterval(function()
+							{
+								if(currentPage==pages)
+								{
+									rollBack();
+								}
+							},2000);
+							
+							 			});//each
+							 			};//
+
+										
+		})(jQuery);
+
+
+
+		$(document).ready(function()
+			{
+				$('.infiniteCarousel').infiniteCarousel();
+				
+			});
+</script>
+</body>
+</html>
